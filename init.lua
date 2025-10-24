@@ -1,24 +1,22 @@
---[[
+--[[  NEOVIM CHEAT SHEET
 
-=====================================================================
-==================== READ THIS BEFORE CONTINUING ====================
-=====================================================================
-========                                    .-----.          ========
-========         .----------------------.   | === |          ========
-========         |.-""""""""""""""""""-.|   |-----|          ========
-========         ||                    ||   | === |          ========
-========         ||   KICKSTART.NVIM   ||   |-----|          ========
-========         ||                    ||   | === |          ========
-========         ||                    ||   |-----|          ========
-========         ||:Tutor              ||   |:::::|          ========
-========         |'-..................-'|   |____o|          ========
-========         `"")----------------(""`   ___________      ========
-========        /::::::::::|  |::::::::::\  \ no mouse \     ========
-========       /:::========|  |==hjkl==:::\  \ required \    ========
-========      '""""""""""""'  '""""""""""""'  '""""""""""'   ========
-========                                                     ========
-=====================================================================
-=====================================================================
+==== neo-tree ====
+\ - open/close
+? - shortcuts
+t - new tab
+H - show hidden
+
+==== Telescope ====
+<C-_> - shortcuts
+
+==== Misc ====
+:Lazy update
+
+
+]]
+--
+
+--[[
 
 What is Kickstart?
 
@@ -91,21 +89,16 @@ vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
-vim.g.have_nerd_font = false
+vim.g.have_nerd_font = true
 
 -- [[ Setting options ]]
 -- See `:help vim.o`
 -- NOTE: You can change these options as you wish!
 --  For more options, you can see `:help option-list`
 
--- Make line numbers default
-vim.o.number = true
--- You can also add relative line numbers, to help with jumping.
---  Experiment for yourself to see if you like it!
--- vim.o.relativenumber = true
-
--- Enable mouse mode, can be useful for resizing splits for example!
-vim.o.mouse = 'a'
+vim.o.number = true -- Make line numbers default
+vim.o.relativenumber = true
+vim.o.mouse = 'a' -- Enable mouse mode, useful for resizing splits
 
 -- Don't show the mode, since it's already in the status line
 vim.o.showmode = false
@@ -118,24 +111,16 @@ vim.schedule(function()
   vim.o.clipboard = 'unnamedplus'
 end)
 
--- Enable break indent
-vim.o.breakindent = true
-
--- Save undo history
-vim.o.undofile = true
+vim.o.breakindent = true -- Enable break indent
+vim.o.undofile = true -- Save undo history
 
 -- Case-insensitive searching UNLESS \C or one or more capital letters in the search term
 vim.o.ignorecase = true
 vim.o.smartcase = true
 
--- Keep signcolumn on by default
-vim.o.signcolumn = 'yes'
-
--- Decrease update time
-vim.o.updatetime = 250
-
--- Decrease mapped sequence wait time
-vim.o.timeoutlen = 300
+vim.o.signcolumn = 'yes' -- Keep signcolumn on by default
+vim.o.updatetime = 250 -- Decrease update time
+vim.o.timeoutlen = 300 -- Decrease mapped sequence wait time
 
 -- Configure how new splits should be opened
 vim.o.splitright = true
@@ -152,14 +137,13 @@ vim.o.splitbelow = true
 vim.o.list = true
 vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
 
--- Preview substitutions live, as you type!
-vim.o.inccommand = 'split'
+vim.opt.cursorlineopt = 'both'
+vim.o.inccommand = 'split' -- Preview substitutions live, as you type
+vim.o.cursorline = true -- Show which line your cursor is on
+vim.o.scrolloff = 10 -- Minimal number of lines to keep above/below cursor
 
--- Show which line your cursor is on
-vim.o.cursorline = true
-
--- Minimal number of screen lines to keep above and below the cursor.
-vim.o.scrolloff = 10
+vim.opt.expandtab = true -- Expand tabs into spaces
+vim.opt.autoindent = true -- Indent if e.g. inside python function
 
 -- if performing an operation that would fail due to unsaved changes in the buffer (like `:q`),
 -- instead raise a dialog asking if you wish to save the current file(s)
@@ -168,6 +152,63 @@ vim.o.confirm = true
 
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
+vim.cmd [[
+  highlight CursorLine cterm=underline gui=underline
+]]
+
+-- Exit insert mode with jk instead of ESC
+vim.keymap.set('i', 'jk', '<ESC>')
+
+-- Move lines up and down using Alt
+vim.keymap.set('n', '<A-k>', ':move .-2<CR>', { desc = 'Move line up' })
+vim.keymap.set('n', '<A-j>', ':move .+1<CR>', { desc = 'Move line down' })
+vim.keymap.set('n', '<A-Down>', ':move .+1<CR>', { desc = 'Move line down' })
+vim.keymap.set('n', '<A-Up>', ':move .-2<CR>', { desc = 'Move line up' })
+
+-- Go to previous and next EDIT position (not the same as jump position)
+vim.keymap.set('n', '<A-Left>', 'g;', { desc = 'Go to previous edit position' })
+vim.keymap.set('n', '<A-Right>', 'g,', { desc = 'Go to next edit position' })
+vim.keymap.set('n', '<A-h>', 'g;', { desc = 'Go to previous edit position' })
+vim.keymap.set('n', '<A-l>', 'g,', { desc = 'Go to next edit position' })
+
+-- Better window navigation
+vim.keymap.set('n', '<C-h>', '<C-w>h', { desc = 'Navigate left window' })
+vim.keymap.set('n', '<C-j>', '<C-w>j', { desc = 'Navigate down window' })
+vim.keymap.set('n', '<C-k>', '<C-w>k', { desc = 'Navigate up window' })
+vim.keymap.set('n', '<C-l>', '<C-w>l', { desc = 'Navigate right window' })
+
+-- Better indenting in visual mode
+vim.keymap.set('v', '<', '<gv', { desc = 'Indent left and reselect' })
+vim.keymap.set('v', '>', '>gv', { desc = 'Indent right and reselect' })
+
+-- Run python files with ipython in a new vertical split
+local function run_python_file(interactive)
+  if vim.bo.filetype == 'python' then
+    local file = vim.fn.expand '%'
+    if file == '' then
+      print 'No file to run'
+      return
+    end
+    vim.cmd 'write'
+    local interactive_flag = interactive and '-i ' or ''
+    vim.cmd('vsplit | terminal ipython ' .. interactive_flag .. '--no-confirm-exit --pdb -- ' .. vim.fn.shellescape(file))
+    vim.cmd 'startinsert'
+  else
+    print 'Not a Python file'
+  end
+end
+
+-- Normal and insert mode => non-interactive
+vim.keymap.set('n', '<F5>', function()
+  run_python_file(false)
+end, { desc = 'Run Python file with F5' })
+vim.keymap.set('i', '<F5>', '<Esc><Cmd>lua run_python_file(false)<CR>', { desc = 'Run Python file with F5' })
+
+-- Normal and insert mode => interactive
+vim.keymap.set('n', '<F6>', function()
+  run_python_file(true)
+end, { desc = 'Run Python file with F6 and enter interactive mode' })
+vim.keymap.set('i', '<F6>', '<Esc><Cmd>lua run_python_file(true)<CR>', { desc = 'Run Python file with F6 and enter interactive mode' })
 
 -- Clear highlights on search when pressing <Esc> in normal mode
 --  See `:help hlsearch`
@@ -673,7 +714,7 @@ require('lazy').setup({
       local servers = {
         -- clangd = {},
         -- gopls = {},
-        -- pyright = {},
+        pyright = {},
         -- rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
@@ -769,7 +810,7 @@ require('lazy').setup({
       formatters_by_ft = {
         lua = { 'stylua' },
         -- Conform can also run multiple formatters sequentially
-        -- python = { "isort", "black" },
+        python = { 'isort', 'black' },
         --
         -- You can use 'stop_after_first' to run the first available formatter from the list
         -- javascript = { "prettierd", "prettier", stop_after_first = true },
@@ -835,7 +876,7 @@ require('lazy').setup({
         -- <c-k>: Toggle signature help
         --
         -- See :h blink-cmp-config-keymap for defining your own keymap
-        preset = 'default',
+        preset = 'super-tab',
 
         -- For more advanced Luasnip keymaps (e.g. selecting choice nodes, expansion) see:
         --    https://github.com/L3MON4D3/LuaSnip?tab=readme-ov-file#keymaps
@@ -850,7 +891,7 @@ require('lazy').setup({
       completion = {
         -- By default, you may press `<c-space>` to show the documentation.
         -- Optionally, set `auto_show = true` to show the documentation after a delay.
-        documentation = { auto_show = false, auto_show_delay_ms = 500 },
+        documentation = { auto_show = true, auto_show_delay_ms = 500 },
       },
 
       sources = {
@@ -944,7 +985,7 @@ require('lazy').setup({
     main = 'nvim-treesitter.configs', -- Sets main module to use for opts
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
     opts = {
-      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
+      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'python', 'query', 'vim', 'vimdoc' },
       -- Autoinstall languages that are not installed
       auto_install = true,
       highlight = {
@@ -974,11 +1015,11 @@ require('lazy').setup({
   --  Uncomment any of the lines below to enable them (you will need to restart nvim).
   --
   -- require 'kickstart.plugins.debug',
-  -- require 'kickstart.plugins.indent_line',
-  -- require 'kickstart.plugins.lint',
-  -- require 'kickstart.plugins.autopairs',
-  -- require 'kickstart.plugins.neo-tree',
-  -- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
+  require 'kickstart.plugins.indent_line',
+  require 'kickstart.plugins.lint',
+  require 'kickstart.plugins.autopairs',
+  require 'kickstart.plugins.neo-tree',
+  require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
 
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
   --    This is the easiest way to modularize your config.
