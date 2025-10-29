@@ -497,6 +497,29 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
       vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
 
+      -- Search
+      vim.keymap.set('n', '<leader>sm', function()
+        builtin.find_files {
+          search_dirs = {
+            '/home/tommy/Desktop',
+            '/home/tommy/Dropbox/website',
+          },
+          hidden = true,
+          follow = true,
+          prompt_title = 'My Directories',
+        }
+      end, { desc = '[S]earch [M]y directories' })
+
+      -- NEW: Grep in your two specific directories
+      vim.keymap.set('n', '<leader>sM', function()
+        builtin.live_grep {
+          search_dirs = {
+            '/home/tommy/Desktop',
+            '/home/tommy/Dropbox/website',
+          },
+          prompt_title = 'Grep My Directories',
+        }
+      end, { desc = '[S]earch [M]y directories (grep)' })
       -- Slightly advanced example of overriding default behavior and theme
       vim.keymap.set('n', '<leader>/', function()
         -- You can pass additional configuration to Telescope to change the theme, layout, etc.
