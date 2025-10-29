@@ -103,6 +103,11 @@ vim.o.mouse = 'a' -- Enable mouse mode, useful for resizing splits
 -- Don't show the mode, since it's already in the status line
 vim.o.showmode = false
 
+-- Folding based on indentation
+vim.o.foldenable = true
+vim.o.foldlevelstart = 99
+vim.o.foldmethod = 'indent'
+
 -- Sync clipboard between OS and Neovim.
 --  Schedule the setting after `UiEnter` because it can increase startup-time.
 --  Remove this option if you want your OS clipboard to remain independent.
