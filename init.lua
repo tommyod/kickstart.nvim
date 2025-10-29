@@ -1,16 +1,30 @@
 --[[  NEOVIM CHEAT SHEET
 
-==== neo-tree ====
-\ - open/close
+==== neo-tree ====               ==== go-actions ====
+\ - open/close                   gc - comment
 ? - shortcuts
 t - new tab
 H - show hidden
 
 ==== Telescope ====
-<C-_> - shortcuts
+<leader>ss - all searches
+<C-_>      - shortcuts
+
+=== Files and splits ===
+:(v)sp filename
+:(v)new
+:vsp term:://ipython
+<C-w> - split actions
 
 ==== Misc ====
 :Lazy update
+
+=== Folding ===
+zM - Close folds
+zR - Open folds
+za - toggle
+zA - toggle
+
 
 
 ]]
